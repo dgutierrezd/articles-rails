@@ -11,25 +11,27 @@ class ArticlesController < ApplicationController
   end
 
   def edit
+    @categories = Category.all
   end
 
   def update
-    @article.update(title: params[:article][:title], content: params[:article][:content])
+    @article.update(article_params)
     @article.save_categories
     redirect_to @article
   end
 
   def new
     @article = Article.new
+    @categories = Category.all
   end
 
   def create
-    @article = Article.create(title: params[:article][:title],
-                              content: params[:article][:content],
-                              user: current_user)
+    @article = current_user.articles.create(article_params)
+    # @article = Article.create(title: params[:article][:title],
+    #                          content: params[:article][:content],
+    #                          user: current_user)
     @article.save_categories
 
-    # @article = current_user.articles.create(article_params)
 
     redirect_to @article
   end
@@ -48,6 +50,6 @@ class ArticlesController < ApplicationController
   end
 
   def article_params
-    params.require(:article).permit(:title, :content, :category_elements)
+    params.require(:article).permit(:title, :content, category_elements: [])
   end
 end

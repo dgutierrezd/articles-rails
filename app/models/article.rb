@@ -8,11 +8,14 @@ class Article < ApplicationRecord
   def save_categories
     # category_elements 1,2,3,4
     # Convertir en arreglo 1,2,3,4 => [1,2,3,4]
-    categories_array = category_elements.split(",")
     # Iterar el arreglo
-	categories_array.each do |category_id|
-		# Crear HasCategory HasCategory<article_id: 1, category_id:2>
-		HasCategory.create(article: self, category_id: category_id)
-	end
+    return has_categories.destroy_all if category_elements.nil? || category_elements.empty?
+
+    has_categories.where.not(category_id: category_elements).destroy_all
+
+    category_elements.each do |category_id|
+      # Crear HasCategory HasCategory<article_id: 1, category_id:2>
+      HasCategory.find_or_create_by(article: self, category_id: category_id)
+    end
   end
 end
